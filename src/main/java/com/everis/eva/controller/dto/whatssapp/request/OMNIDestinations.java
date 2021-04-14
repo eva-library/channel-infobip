@@ -1,0 +1,36 @@
+/*
+* eVA
+* Version: 2.3.0
+* copyright (c) 2018 everis Spain S.A
+* Date: 01 December 2018
+* Author: everis bots@everis.com - Guilherme Ferreira Gomes, Guilherme Durazzo
+* All rights reserved
+*/
+
+package com.everis.eva.controller.dto.whatssapp.request;
+
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+import com.google.gson.annotations.SerializedName;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Builder
+@AllArgsConstructor
+@Getter
+public class OMNIDestinations implements Serializable {
+	private static final long serialVersionUID = -5385686737034433401L;
+	
+	@SerializedName("to")
+	private OMNITo to;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
+}

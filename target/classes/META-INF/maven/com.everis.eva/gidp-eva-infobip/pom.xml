@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- /* eVA * Version: 3.x * copyright (c) 2020 everis Spain S.A * Date: 
+	Wednesday, August 5, 2020 * Author: - Guilherme Ferreira Gomes - Natanael 
+	Vaz da Fonnseca - Leandro Marques * All rights reserved */ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>gidp-eva-infobip</artifactId>
+	<packaging>jar</packaging>
+	<name>gidp-eva-infobip</name>
+	<description>eVA Infobip</description>
+	<scm>
+		<connection>scm:git:https://gitlab.eva.bot/asseteva/eva-infobip.git</connection>
+		<developerConnection>scm:git:https://gitlab.eva.bot/asseteva/eva-infobip.git</developerConnection>
+		<url>https://gitlab.eva.bot/asseteva/eva-infobip</url>
+		<tag>${project.version}</tag>
+	</scm>
+	<parent>
+		<groupId>com.everis.eva</groupId>
+		<artifactId>eva-starter-parent</artifactId>
+		<version>3.2.2.0</version>
+		<relativePath />
+	</parent>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<activatedProperties>dev</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>hml</id>
+			<properties>
+				<activatedProperties>hml</activatedProperties>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<activatedProperties>prod</activatedProperties>
+			</properties>
+		</profile>
+	</profiles>
+	<dependencies>
+		<dependency>
+			<groupId>com.everis.eva</groupId>
+			<artifactId>eva-starter-channel</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

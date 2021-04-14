@@ -1,0 +1,161 @@
+###################################################################################################################
+##########################Deployment file for eva-infobip at K8S####################################################
+###################################################################################################################
+---
+################################################
+############## - Config Map -###################
+################################################
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "gidp-eva-infobip-config"
+  namespace: "eva"
+  labels:
+    app: "gidp-eva-infobip"
+data:
+  PORT: "8080"
+  EVADB_DS_URL: "jdbc:mariadb://db-dev.eva.bot/alvoradadb?useSSL=false&serverTimezone=UTC"
+  EVADB_DS_USER: "eva"
+  EVADB_DS_PWD: "JPMzcrQyP6r1ZG0XR76ZZ1i34OhDa3"
+  HIKARI_CONNECTION_TIMEOUT: "27000"
+  HIKARI_IDDLE_TIMEOUT: "10000"
+  HIKARI_MAX_LIFETIME: "60000"
+  HIKARI_MAXIMUM_POOLSIZE: "50"
+  CACHETYPE: "simple"
+  REDIS_HOST: "eva-redis"
+  REDIS_PORT: "6379"
+  REDIS_PWD: "020693"
+  REDIS_KEEP_ALIVE_JOB: "true"
+  REDIS_KEEP_ALIVE_TIME: "10000"
+---
+################################################
+############## - Service - #####################
+################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: gidp-eva-infobip
+  namespace: eva
+  labels:
+    app: gidp-eva-infobip
+    service: gidp-eva-infobip
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: gidp-eva-infobip
+---
+################################################
+############## - Deployment - ##################
+################################################
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gidp-eva-infobip-v1
+  namespace: eva
+  labels:
+    app: gidp-eva-infobip
+    version: v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gidp-eva-infobip
+        version: v1
+    spec:
+      containers:
+      - name: gidp-eva-infobip
+        image: gcr.io/calm-premise-168420/eva-dev/gidp-eva-infobip:3.2.2.0
+        env:
+        - name: "PORT"
+          valueFrom:
+            configMapKeyRef:
+              key: "PORT"
+              name: "gidp-eva-infobip-config"
+        - name: "EVADB_DS_URL"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_URL"
+              name: "gidp-eva-infobip-config"
+        - name: "EVADB_DS_USER"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_USER"
+              name: "gidp-eva-infobip-config"
+        - name: "EVADB_DS_PWD"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_PWD"
+              name: "gidp-eva-infobip-config"
+        - name: "HIKARI_CONNECTION_TIMEOUT"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_CONNECTION_TIMEOUT"
+              name: "gidp-eva-infobip-config"
+        - name: "HIKARI_IDDLE_TIMEOUT"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_IDDLE_TIMEOUT"
+              name: "gidp-eva-infobip-config"
+        - name: "HIKARI_MAX_LIFETIME"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_MAX_LIFETIME"
+              name: "gidp-eva-infobip-config"
+        - name: "HIKARI_MAXIMUM_POOLSIZE"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_MAXIMUM_POOLSIZE"
+              name: "gidp-eva-infobip-config"
+        - name: "CACHETYPE"
+          valueFrom:
+            configMapKeyRef:
+              key: "CACHETYPE"
+              name: "gidp-eva-infobip-config"                                                        
+        - name: "REDIS_HOST"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_HOST"
+              name: "gidp-eva-infobip-config"
+        - name: "REDIS_PORT"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_PORT"
+              name: "gidp-eva-infobip-config"
+        - name: "REDIS_PWD"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_PWD"
+              name: "gidp-eva-infobip-config"
+        - name: "REDIS_KEEP_ALIVE_JOB"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_KEEP_ALIVE_JOB"
+              name: "gidp-eva-infobip-config"
+        - name: "REDIS_KEEP_ALIVE_TIME"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_KEEP_ALIVE_TIME"
+              name: "gidp-eva-infobip-config"          
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 180
+          timeoutSeconds: 5
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 110
+          timeoutSeconds: 5
+          failureThreshold: 10        
+        ports:
+        - containerPort: 8080
+---

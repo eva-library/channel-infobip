@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gidp-eva-infobip
+  namespace: eva
+  labels:
+    app: gidp-eva-infobip
+    service: gidp-eva-infobip
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http-infobip
+      protocol: TCP
+      name: http-infobip
+  selector:
+    app: gidp-eva-infobip

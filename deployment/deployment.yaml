@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gidp-eva-infobip
+  namespace: eva
+  labels:
+    app: gidp-eva-infobip
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gidp-eva-infobip
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: gidp-eva-infobip
+        version: v1
+    spec:
+      containers:
+        - name: gidp-eva-infobip
+          image: eva3registry.azurecr.io/gidp-eva-infobip:3.2.2.0
+          imagePullPolicy: Always
+          ports:
+            - name: http-infobip
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http-infobip
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 30
+            failureThreshold: 2
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http-infobip      
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 30
+            failureThreshold: 2
+          env:
+            - name: INFOBIPEVA
+              value: "eVA Infobip"
+            - name: EVADB_DS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: EVADB_DS_URL
+            - name: EVADB_DS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: EVADB_DS_USER
+            - name: EVADB_DS_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: EVADB_DS_PWD
+            - name: PORT
+              value: "8080"
+            - name: CACHETYPE
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: CACHETYPE
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: REDIS_PORT
+            - name: REDIS_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: REDIS_PWD
+            - name: REDIS_SSL
+              valueFrom:
+                secretKeyRef:
+                  name: evasecret
+                  key: REDIS_SSL
+          resources:
+            limits:
+              cpu: 2500m
+              memory: 3072Mi
+            requests:
+              cpu: 200m
+              memory: 1024Mi
+      imagePullSecrets:
+        - name: containerregistrysecret

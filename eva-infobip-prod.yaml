@@ -1,0 +1,161 @@
+###################################################################################################################
+##########################Deployment file for eva-infobip at K8S####################################################
+###################################################################################################################
+---
+################################################
+############## - Config Map -###################
+################################################
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "@project.artifactId@-config"
+  namespace: "eva"
+  labels:
+    app: "@project.artifactId@"
+data:
+  PORT: "8080"
+  EVADB_DS_URL: "jdbc:mariadb://db.eva.bot/alvoradadb?useSSL=false&serverTimezone=UTC"
+  EVADB_DS_USER: "eva"
+  EVADB_DS_PWD: "Q6VeogRHRcNgVzKdAFMfOv95cZpkJ8"
+  HIKARI_CONNECTION_TIMEOUT: "27000"
+  HIKARI_IDDLE_TIMEOUT: "10000"
+  HIKARI_MAX_LIFETIME: "60000"
+  HIKARI_MAXIMUM_POOLSIZE: "50"
+  CACHETYPE: "simple"
+  REDIS_HOST: "eva-redis"
+  REDIS_PORT: "6379"
+  REDIS_PWD: "020693"
+  REDIS_KEEP_ALIVE_JOB: "true"
+  REDIS_KEEP_ALIVE_TIME: "10000"
+---
+################################################
+############## - Service - #####################
+################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: @project.artifactId@
+  namespace: eva
+  labels:
+    app: @project.artifactId@
+    service: @project.artifactId@
+spec:
+  ports:
+  - port: 8080
+    name: http
+  selector:
+    app: @project.artifactId@
+---
+################################################
+############## - Deployment - ##################
+################################################
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: @project.artifactId@-v1
+  namespace: eva
+  labels:
+    app: @project.artifactId@
+    version: v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: @project.artifactId@
+        version: v1
+    spec:
+      containers:
+      - name: @project.artifactId@
+        image: @eva.default.cloud.region@/@eva.default.project.id@/eva-prod/@project.artifactId@:@eva.default.image.version@
+        env:
+        - name: "PORT"
+          valueFrom:
+            configMapKeyRef:
+              key: "PORT"
+              name: "@project.artifactId@-config"
+        - name: "EVADB_DS_URL"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_URL"
+              name: "@project.artifactId@-config"
+        - name: "EVADB_DS_USER"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_USER"
+              name: "@project.artifactId@-config"
+        - name: "EVADB_DS_PWD"
+          valueFrom:
+            configMapKeyRef:
+              key: "EVADB_DS_PWD"
+              name: "@project.artifactId@-config"
+        - name: "HIKARI_CONNECTION_TIMEOUT"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_CONNECTION_TIMEOUT"
+              name: "@project.artifactId@-config"
+        - name: "HIKARI_IDDLE_TIMEOUT"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_IDDLE_TIMEOUT"
+              name: "@project.artifactId@-config"
+        - name: "HIKARI_MAX_LIFETIME"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_MAX_LIFETIME"
+              name: "@project.artifactId@-config"
+        - name: "HIKARI_MAXIMUM_POOLSIZE"
+          valueFrom:
+            configMapKeyRef:
+              key: "HIKARI_MAXIMUM_POOLSIZE"
+              name: "@project.artifactId@-config"
+        - name: "CACHETYPE"
+          valueFrom:
+            configMapKeyRef:
+              key: "CACHETYPE"
+              name: "@project.artifactId@-config"                                                        
+        - name: "REDIS_HOST"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_HOST"
+              name: "@project.artifactId@-config"
+        - name: "REDIS_PORT"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_PORT"
+              name: "@project.artifactId@-config"
+        - name: "REDIS_PWD"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_PWD"
+              name: "@project.artifactId@-config"
+        - name: "REDIS_KEEP_ALIVE_JOB"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_KEEP_ALIVE_JOB"
+              name: "@project.artifactId@-config"
+        - name: "REDIS_KEEP_ALIVE_TIME"
+          valueFrom:
+            configMapKeyRef:
+              key: "REDIS_KEEP_ALIVE_TIME"
+              name: "@project.artifactId@-config"          
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 180
+          timeoutSeconds: 5
+          failureThreshold: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 110
+          timeoutSeconds: 5
+          failureThreshold: 10        
+        ports:
+        - containerPort: 8080
+---

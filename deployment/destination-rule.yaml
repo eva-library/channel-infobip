@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: gidp-eva-infobip
+  namespace: eva
+spec:
+  host: gidp-eva-infobip
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+    trafficPolicy:
+      tls:
+        mode: ISTIO_MUTUAL  
