@@ -6,7 +6,7 @@ This application is a Spring Boot app and uses the Azure Kubernetes Service (AKS
 
 # 1. Deployment
 
-- [Documentation](https://drive.google.com/file/d/1OU4sLIQFaJ0ExFFkSavI4ROIePOWId9-/view?usp=sharing)
+- [Documentation](https://github.com/eva-library/channel-infobip/blob/main/Conector%20eva-infobip.docx)
 
 ## 2. Prerequisites
 
